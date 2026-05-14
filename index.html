@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Segeluhr Countdown</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Segeluhr Countdown</h1>
+
+      <section class="display-wrap">
+        <p id="status" class="status">Bereit</p>
+        <div id="display" class="display" aria-live="polite">05:00</div>
+      </section>
+
+      <section class="presets" aria-label="Presets">
+        <button type="button" data-seconds="300">5:00</button>
+        <button type="button" data-seconds="180">3:00</button>
+        <button type="button" data-seconds="60">1:00</button>
+      </section>
+
+      <section class="custom" aria-label="Eigene Zeit">
+        <label>
+          Minuten
+          <input id="minutes" type="number" min="0" max="59" value="5" />
+        </label>
+        <label>
+          Sekunden
+          <input id="seconds" type="number" min="0" max="59" value="0" />
+        </label>
+        <button id="apply-custom" type="button">Übernehmen</button>
+      </section>
+
+      <section class="controls" aria-label="Steuerung">
+        <button id="start" type="button">Start</button>
+        <button id="pause" type="button" disabled>Pause</button>
+        <button id="reset" type="button">Reset</button>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
