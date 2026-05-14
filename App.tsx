@@ -171,7 +171,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Känguruh Starttimer</Text>
+        <Text style={styles.title}>Känguruh Timer</Text>
         <Text style={styles.clock}>{formatClockTime(clockTime)}</Text>
       </View>
       {!isRunning && !isFinished ? (
@@ -205,13 +205,6 @@ export default function App() {
           <Pressable style={styles.button} onPress={handleCustomStart}>
             <Text style={styles.buttonLabel}>Countdown starten</Text>
           </Pressable>
-        </View>
-      ) : isRunning ? (
-        <View style={styles.countdownContainer}>
-          <Text style={styles.subtitle}>
-            {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
-          </Text>
-          <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
           <View style={styles.offsetRow}>
             <Pressable style={styles.offsetButton} onPress={handleOffsetMinus}>
               <Text style={styles.offsetButtonLabel}>−</Text>
@@ -223,6 +216,18 @@ export default function App() {
               <Text style={styles.offsetButtonLabel}>+</Text>
             </Pressable>
           </View>
+        </View>
+      ) : isRunning ? (
+        <View style={styles.countdownContainer}>
+          <Text style={styles.subtitle}>
+            {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
+          </Text>
+          <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
+          {offsetSeconds !== 0 && (
+            <Text style={styles.offsetLabel}>
+              Offset: {offsetSeconds > 0 ? '+' : ''}{offsetSeconds}s
+            </Text>
+          )}
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
           </Pressable>
