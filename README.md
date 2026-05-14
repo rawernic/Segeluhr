@@ -1,13 +1,14 @@
-# Segeluhr
+# Känguruh Starttimer
 
-Starttimer für Känguru-Regatten als Expo-App (Android & iOS).
+Starttimer für Känguruh-Regatten als Webapp.
 
 ## Funktionen
 
-- Auswahl von 4 Referenzzeiten beim Start: **5, 10, 15 oder 20 Minuten**
+- Auswahl von Startzeiten für H-Boot anhand der Starttafel
+- freier Countdown für Tests und/oder Anpassung an die Regatta-Uhr
 - Countdown-Anzeige in **Minuten:Sekunden**
-- Sprachansage bei Minutenwechsel, solange mehr als eine Minute Restzeit vorhanden ist
-- In der letzten Minute Sprachansage alle **10 Sekunden**
+- Sprachansage bei 15 Minuten Restzeit bei Minutenwechsel
+- In der letzten Minute Sprachansage alle xx Sekunden**
 
 ## Starten
 
