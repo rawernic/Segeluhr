@@ -229,6 +229,9 @@ export default function App() {
           <Text style={styles.subtitle}>
             {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
           </Text>
+          <Text style={styles.targetTimeInfo}>
+            Zielzeit: {formatClockTime(new Date(targetTimestamp!))}
+          </Text>
           <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
@@ -289,6 +292,12 @@ const styles = StyleSheet.create({
   },
   countdownContainer: {
     alignItems: 'center',
+  },
+  targetTimeInfo: {
+    fontSize: 15,
+    color: '#5a7fa8',
+    marginBottom: 6,
+    fontVariant: ['tabular-nums'],
   },
   countdown: {
     fontSize: 72,
