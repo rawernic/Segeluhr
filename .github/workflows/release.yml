@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create release archive
+        run: zip -r segeluhr-${{ github.ref_name }}.zip index.html styles.css script.js README.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Segeluhr ${{ github.ref_name }}
+          body: |
+            ## Segeluhr Countdown ${{ github.ref_name }}
+
+            Statische Web-App als ZIP-Archiv zum Herunterladen und lokal öffnen.
+
+            **Online:** https://rawernic.github.io/Segeluhr/
+          files: segeluhr-${{ github.ref_name }}.zip
