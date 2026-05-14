@@ -229,9 +229,11 @@ export default function App() {
           <Text style={styles.subtitle}>
             {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
           </Text>
-          <Text style={styles.targetTimeInfo}>
-            Zielzeit: {formatClockTime(new Date(targetTimestamp!))}
-          </Text>
+          {targetTimestamp !== null && (
+            <Text style={styles.targetTimeInfo}>
+              Zielzeit: {formatClockTime(new Date(targetTimestamp))}
+            </Text>
+          )}
           <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
