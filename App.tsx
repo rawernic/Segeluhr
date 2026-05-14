@@ -16,7 +16,7 @@ const REGATTA_START_TIMES: RegattaStartTime[] = [
   { id: 'start-2', label: '35', hour: 18, minute: 41, second: 54 },
   { id: 'start-3', label: '40', hour: 18, minute: 43, second: 36 },
   { id: 'start-4', label: '45', hour: 18, minute: 45, second: 18 },
-  { id: 'start-5', label: '50', hour: 18, minute: 47, second: 00 },
+  { id: 'start-5', label: '50', hour: 18, minute: 47, second: 0 },
 ];
 
 
