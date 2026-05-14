@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Speech from 'expo-speech';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 type RegattaStartTime = {
   id: string;
@@ -56,8 +56,8 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
     return null;
   }
 
-  const previousMinutes = Math.floor(previousSeconds / 60);
-  const currentMinutes = Math.floor(currentSeconds / 60);
+  const previousMinutes = Math.ceil(previousSeconds / 60);
+  const currentMinutes = Math.ceil(currentSeconds / 60);
 
   if (previousMinutes > currentMinutes) {
     return currentMinutes === 1 ? 'Noch 1 Minute' : `Noch ${currentMinutes} Minuten`;
@@ -71,6 +71,8 @@ export default function App() {
   const [activeStartId, setActiveStartId] = useState<string | null>(null);
   const [targetTimestamp, setTargetTimestamp] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
+  const [customMinutes, setCustomMinutes] = useState<string>('2');
+  const [customSeconds, setCustomSeconds] = useState<string>('0');
 
   const activeStart = useMemo(
     () => REGATTA_START_TIMES.find((item) => item.id === activeStartId) ?? null,
@@ -120,6 +122,19 @@ export default function App() {
     setTargetTimestamp(target);
   };
 
+  const handleCustomStart = () => {
+    const minutes = Math.max(0, parseInt(customMinutes, 10) || 0);
+    const seconds = Math.max(0, parseInt(customSeconds, 10) || 0);
+    const totalSeconds = minutes * 60 + seconds;
+    if (totalSeconds <= 0) {
+      return;
+    }
+    const target = Date.now() + totalSeconds * 1000;
+    setActiveStartId(null);
+    setRemainingSeconds(totalSeconds);
+    setTargetTimestamp(target);
+  };
+
   const handleReset = () => {
     setTargetTimestamp(null);
     setActiveStartId(null);
@@ -144,10 +159,35 @@ export default function App() {
               <Text style={styles.buttonLabel}>{start.label}</Text>
             </Pressable>
           ))}
+          <Text style={[styles.subtitle, styles.customTitle]}>Freier Countdown</Text>
+          <View style={styles.customRow}>
+            <TextInput
+              style={styles.input}
+              keyboardType="number-pad"
+              value={customMinutes}
+              onChangeText={(text) => setCustomMinutes(text.replace(/[^0-9]/g, ''))}
+              maxLength={3}
+              placeholder="Min"
+            />
+            <Text style={styles.customSeparator}>:</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="number-pad"
+              value={customSeconds}
+              onChangeText={(text) => setCustomSeconds(text.replace(/[^0-9]/g, ''))}
+              maxLength={2}
+              placeholder="Sek"
+            />
+          </View>
+          <Pressable style={styles.button} onPress={handleCustomStart}>
+            <Text style={styles.buttonLabel}>Countdown starten</Text>
+          </Pressable>
         </View>
       ) : isRunning ? (
         <View style={styles.countdownContainer}>
-          <Text style={styles.subtitle}>Start um {activeStart?.label ?? ''}</Text>
+          <Text style={styles.subtitle}>
+            {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
+          </Text>
           <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
@@ -231,5 +271,31 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '700',
     color: '#198754',
+  },
+  customTitle: {
+    marginTop: 12,
+  },
+  customRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#214d72',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    fontSize: 18,
+    color: '#0d2b45',
+    backgroundColor: '#ffffff',
+    minWidth: 70,
+    textAlign: 'center',
+  },
+  customSeparator: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0d2b45',
   },
 });
