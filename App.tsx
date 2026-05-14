@@ -84,6 +84,7 @@ export default function App() {
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [customMinutes, setCustomMinutes] = useState<string>('2');
   const [customSeconds, setCustomSeconds] = useState<string>('0');
+  const [offsetSeconds, setOffsetSeconds] = useState<number>(0);
 
   const activeStart = useMemo(
     () => REGATTA_START_TIMES.find((item) => item.id === activeStartId) ?? null,
@@ -146,10 +147,21 @@ export default function App() {
     setTargetTimestamp(target);
   };
 
+  const handleOffsetPlus = () => {
+    setOffsetSeconds((prev) => prev + 1);
+    setTargetTimestamp((prev) => (prev !== null ? prev + 1000 : prev));
+  };
+
+  const handleOffsetMinus = () => {
+    setOffsetSeconds((prev) => prev - 1);
+    setTargetTimestamp((prev) => (prev !== null ? prev - 1000 : prev));
+  };
+
   const handleReset = () => {
     setTargetTimestamp(null);
     setActiveStartId(null);
     setRemainingSeconds(0);
+    setOffsetSeconds(0);
     Speech.stop();
   };
 
@@ -200,6 +212,17 @@ export default function App() {
             {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
           </Text>
           <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
+          <View style={styles.offsetRow}>
+            <Pressable style={styles.offsetButton} onPress={handleOffsetMinus}>
+              <Text style={styles.offsetButtonLabel}>−</Text>
+            </Pressable>
+            <Text style={styles.offsetLabel}>
+              Offset: {offsetSeconds > 0 ? '+' : ''}{offsetSeconds}s
+            </Text>
+            <Pressable style={styles.offsetButton} onPress={handleOffsetPlus}>
+              <Text style={styles.offsetButtonLabel}>+</Text>
+            </Pressable>
+          </View>
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
           </Pressable>
@@ -308,5 +331,34 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#0d2b45',
+  },
+  offsetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    marginBottom: 20,
+  },
+  offsetButton: {
+    backgroundColor: '#214d72',
+    borderRadius: 10,
+    width: 52,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  offsetButtonLabel: {
+    color: '#ffffff',
+    fontSize: 28,
+    fontWeight: '700',
+    lineHeight: 32,
+  },
+  offsetLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#214d72',
+    minWidth: 110,
+    textAlign: 'center',
+    fontVariant: ['tabular-nums'],
   },
 });
