@@ -150,7 +150,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Segeluhr</Text>
+        <Text style={styles.title}>Känguru Starttimer</Text>
         <Text style={styles.clock}>{formatClockTime(clockTime)}</Text>
       </View>
       {!isRunning && !isFinished ? (
