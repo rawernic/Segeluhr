@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Segeluhr",
-    "slug": "Segeluhr",
+    "name": "Känguru Start Timer",
+    "slug": "Känguru Start Timer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
