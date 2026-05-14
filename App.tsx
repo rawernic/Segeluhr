@@ -46,7 +46,7 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   }
 
   if (currentSeconds <= 0) {
-    return 'Gooooo!';
+    return 'Start!';
   }
 
   if (currentSeconds <= 60) {
