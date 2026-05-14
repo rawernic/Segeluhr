@@ -3,23 +3,39 @@ import { StatusBar } from 'expo-status-bar';
 import * as Speech from 'expo-speech';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-type ReferenceTime = {
+type RegattaStartTime = {
   id: string;
   label: string;
-  durationSeconds: number;
+  hour: number;
+  minute: number;
+  second: number;
 };
 
-const REFERENCE_TIMES: ReferenceTime[] = [
-  { id: 'ref-5', label: '5:00 Minuten', durationSeconds: 5 * 60 },
-  { id: 'ref-10', label: '10:00 Minuten', durationSeconds: 10 * 60 },
-  { id: 'ref-15', label: '15:00 Minuten', durationSeconds: 15 * 60 },
-  { id: 'ref-20', label: '20:00 Minuten', durationSeconds: 20 * 60 },
+const REGATTA_START_TIMES: RegattaStartTime[] = [
+  { id: 'start-1', label: '18:44:30', hour: 18, minute: 44, second: 30 },
+  { id: 'start-2', label: '18:45:00', hour: 18, minute: 45, second: 0 },
+  { id: 'start-3', label: '18:45:40', hour: 18, minute: 45, second: 40 },
+  { id: 'start-4', label: '18:46:20', hour: 18, minute: 46, second: 20 },
 ];
 
-function formatTime(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+function getTimestampForToday(hour: number, minute: number, second: number): number {
+  const d = new Date();
+  d.setHours(hour, minute, second, 0);
+  return d.getTime();
+}
+
+function formatCountdown(totalSeconds: number): string {
+  const minutes = Math.floor(Math.abs(totalSeconds) / 60);
+  const seconds = Math.abs(totalSeconds) % 60;
+  const sign = totalSeconds < 0 ? '-' : '';
+  return `${sign}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function formatClockTime(date: Date): string {
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${h}:${m}:${s}`;
 }
 
 function getAnnouncement(previousSeconds: number, currentSeconds: number): string | null {
@@ -51,24 +67,34 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
 }
 
 export default function App() {
-  const [activeReferenceId, setActiveReferenceId] = useState<string | null>(null);
+  const [clockTime, setClockTime] = useState<Date>(new Date());
+  const [activeStartId, setActiveStartId] = useState<string | null>(null);
   const [targetTimestamp, setTargetTimestamp] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
 
-  const activeReference = useMemo(
-    () => REFERENCE_TIMES.find((item) => item.id === activeReferenceId) ?? null,
-    [activeReferenceId],
+  const activeStart = useMemo(
+    () => REGATTA_START_TIMES.find((item) => item.id === activeStartId) ?? null,
+    [activeStartId],
   );
 
+  // Live clock — always ticking
+  useEffect(() => {
+    const clockInterval = setInterval(() => {
+      setClockTime(new Date());
+    }, 1000);
+    return () => clearInterval(clockInterval);
+  }, []);
+
+  // Countdown tick
   useEffect(() => {
     if (targetTimestamp === null) {
       return;
     }
 
     const interval = setInterval(() => {
-      const nextSeconds = Math.max(0, Math.ceil((targetTimestamp - Date.now()) / 1000));
+      const nextSeconds = Math.ceil((targetTimestamp - Date.now()) / 1000);
 
-      setRemainingSeconds((previousSeconds) => {
+      setRemainingSeconds((previousSeconds: number) => {
         const announcement = getAnnouncement(previousSeconds, nextSeconds);
         if (announcement) {
           Speech.speak(announcement, { language: 'de-DE' });
@@ -76,7 +102,7 @@ export default function App() {
         return nextSeconds;
       });
 
-      if (nextSeconds === 0) {
+      if (nextSeconds <= 0) {
         clearInterval(interval);
       }
     }, 1000);
@@ -86,51 +112,55 @@ export default function App() {
     };
   }, [targetTimestamp]);
 
-  const handleStart = (reference: ReferenceTime) => {
-    const now = Date.now();
-    setActiveReferenceId(reference.id);
-    setRemainingSeconds(reference.durationSeconds);
-    setTargetTimestamp(now + reference.durationSeconds * 1000);
+  const handleStart = (start: RegattaStartTime) => {
+    const target = getTimestampForToday(start.hour, start.minute, start.second);
+    const initialSeconds = Math.ceil((target - Date.now()) / 1000);
+    setActiveStartId(start.id);
+    setRemainingSeconds(initialSeconds);
+    setTargetTimestamp(target);
   };
 
   const handleReset = () => {
     setTargetTimestamp(null);
-    setActiveReferenceId(null);
+    setActiveStartId(null);
     setRemainingSeconds(0);
     Speech.stop();
   };
 
   const isRunning = targetTimestamp !== null && remainingSeconds > 0;
+  const isFinished = targetTimestamp !== null && remainingSeconds <= 0;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Segeluhr</Text>
-      {!isRunning ? (
+      <View style={styles.header}>
+        <Text style={styles.title}>Segeluhr</Text>
+        <Text style={styles.clock}>{formatClockTime(clockTime)}</Text>
+      </View>
+      {!isRunning && !isFinished ? (
         <View style={styles.selectionContainer}>
-          <Text style={styles.subtitle}>Referenzzeit wählen</Text>
-          {REFERENCE_TIMES.map((reference) => (
-            <Pressable key={reference.id} style={styles.button} onPress={() => handleStart(reference)}>
-              <Text style={styles.buttonLabel}>{reference.label}</Text>
+          <Text style={styles.subtitle}>Regatta-Startzeit wählen</Text>
+          {REGATTA_START_TIMES.map((start) => (
+            <Pressable key={start.id} style={styles.button} onPress={() => handleStart(start)}>
+              <Text style={styles.buttonLabel}>{start.label}</Text>
             </Pressable>
           ))}
         </View>
-      ) : (
+      ) : isRunning ? (
         <View style={styles.countdownContainer}>
-          <Text style={styles.subtitle}>{activeReference?.label ?? 'Countdown'}</Text>
-          <Text style={styles.countdown}>{formatTime(remainingSeconds)}</Text>
+          <Text style={styles.subtitle}>Start um {activeStart?.label ?? ''}</Text>
+          <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
           </Pressable>
         </View>
-      )}
-      {targetTimestamp !== null && remainingSeconds === 0 ? (
+      ) : (
         <View style={styles.finishedContainer}>
           <Text style={styles.finishedText}>Start!</Text>
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Neu starten</Text>
           </Pressable>
         </View>
-      ) : null}
+      )}
       <StatusBar style="auto" />
     </View>
   );
@@ -144,11 +174,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
   title: {
     fontSize: 32,
     fontWeight: '700',
-    marginBottom: 24,
     color: '#0d2b45',
+  },
+  clock: {
+    fontSize: 22,
+    fontWeight: '500',
+    color: '#214d72',
+    marginTop: 4,
+    fontVariant: ['tabular-nums'],
   },
   subtitle: {
     fontSize: 18,
