@@ -94,6 +94,10 @@ export default function App() {
     const interval = setInterval(() => {
       const nextSeconds = Math.ceil((targetTimestamp - Date.now()) / 1000);
 
+      if (nextSeconds <= 0) {
+        clearInterval(interval);
+      }
+
       setRemainingSeconds((previousSeconds: number) => {
         const announcement = getAnnouncement(previousSeconds, nextSeconds);
         if (announcement) {
@@ -101,10 +105,6 @@ export default function App() {
         }
         return nextSeconds;
       });
-
-      if (nextSeconds <= 0) {
-        clearInterval(interval);
-      }
     }, 1000);
 
     return () => {
