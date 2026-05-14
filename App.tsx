@@ -46,13 +46,13 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   }
 
   if (currentSeconds <= 0) {
-    return 'Staaaaart';
+    return 'Gooooo!';
   }
 
   if (currentSeconds <= 60) {
     for (const threshold of [60, 50, 40, 35, 30, 25, 20, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) {
       if (previousSeconds > threshold && currentSeconds <= threshold) {
-        return `${threshold}`;
+        return `${threshold}!`;
       }
     }
     return null;
@@ -64,13 +64,14 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   if (currentSeconds <= 180) {
     for (const threshold of [150, 90]) {
       if (previousSeconds > threshold && currentSeconds <= threshold) {
-        return `Noch ${currentMinutes} Minuten 30`;
+        const minutes = ${currentMinutes} -1;
+        return `Noch ${minutes} Minuten 30!`;
       }
     }
   }
 
-  if (previousMinutes > currentMinutes && currentMinutes > 1) {
-    return `Noch ${currentMinutes} Minuten`;
+  if (previousMinutes > currentMinutes && currentMinutes < 15) {
+    return `Noch ${currentMinutes} Minuten!`;
   }
 
   return null;
