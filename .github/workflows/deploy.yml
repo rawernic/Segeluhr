@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx expo export --platform web --output-dir dist
+        env:
+          PAGES_BASE_URL: /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
