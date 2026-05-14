@@ -15,4 +15,4 @@ Ein einfacher Countdown-Starttimer als statische Web-App.
 
 ### Start
 
-Einfach `/home/runner/work/Segeluhr/Segeluhr/index.html` im Browser öffnen.
+Einfach `index.html` im Browser öffnen.
