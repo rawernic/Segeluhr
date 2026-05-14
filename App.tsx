@@ -71,7 +71,6 @@ export default function App() {
       setRemainingSeconds((previousSeconds) => {
         const announcement = getAnnouncement(previousSeconds, nextSeconds);
         if (announcement) {
-          Speech.stop();
           Speech.speak(announcement, { language: 'de-DE' });
         }
         return nextSeconds;
@@ -80,7 +79,7 @@ export default function App() {
       if (nextSeconds === 0) {
         clearInterval(interval);
       }
-    }, 250);
+    }, 1000);
 
     return () => {
       clearInterval(interval);
