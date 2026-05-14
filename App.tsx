@@ -57,9 +57,17 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
     }
     return null;
   }
-
+  
   const previousMinutes = Math.ceil(previousSeconds / 60);
   const currentMinutes = Math.ceil(currentSeconds / 60);
+
+  if (currentSeconds <= 180) {
+    for (const threshold of [150, 90]) {
+      if (previousSeconds > threshold && currentSeconds <= threshold) {
+        return `Noch ${currentMinutes} Minuten 30`;
+      }
+    }
+  }
 
   if (previousMinutes > currentMinutes && currentMinutes > 1) {
     return `Noch ${currentMinutes} Minuten`;
