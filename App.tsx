@@ -64,7 +64,7 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   if (currentSeconds <= 180) {
     for (const threshold of [150, 90]) {
       if (previousSeconds > threshold && currentSeconds <= threshold) {
-        const minutes = ${currentMinutes} -1;
+        const minutes = currentMinutes -1;
         return `Noch ${minutes} Minuten 30!`;
       }
     }
