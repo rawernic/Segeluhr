@@ -161,18 +161,36 @@ export default function App() {
     setTargetTimestamp(null);
     setActiveStartId(null);
     setRemainingSeconds(0);
-    setOffsetSeconds(0);
     Speech.stop();
   };
 
   const isRunning = targetTimestamp !== null && remainingSeconds > 0;
   const isFinished = targetTimestamp !== null && remainingSeconds <= 0;
 
+  const offsetClockTime = new Date(clockTime.getTime() + offsetSeconds * 1000);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Känguruh Timer</Text>
-        <Text style={styles.clock}>{formatClockTime(clockTime)}</Text>
+        <View style={styles.clockRow}>
+          {!isRunning && (
+            <Pressable style={styles.offsetButton} onPress={handleOffsetMinus}>
+              <Text style={styles.offsetButtonLabel}>−</Text>
+            </Pressable>
+          )}
+          <Text style={styles.clock}>{formatClockTime(offsetClockTime)}</Text>
+          {!isRunning && (
+            <Pressable style={styles.offsetButton} onPress={handleOffsetPlus}>
+              <Text style={styles.offsetButtonLabel}>+</Text>
+            </Pressable>
+          )}
+        </View>
+        {!isRunning && offsetSeconds !== 0 && (
+          <Text style={styles.offsetLabel}>
+            Offset: {offsetSeconds > 0 ? '+' : ''}{offsetSeconds}s
+          </Text>
+        )}
       </View>
       {!isRunning && !isFinished ? (
         <View style={styles.selectionContainer}>
@@ -205,17 +223,6 @@ export default function App() {
           <Pressable style={styles.button} onPress={handleCustomStart}>
             <Text style={styles.buttonLabel}>Countdown starten</Text>
           </Pressable>
-          <View style={styles.offsetRow}>
-            <Pressable style={styles.offsetButton} onPress={handleOffsetMinus}>
-              <Text style={styles.offsetButtonLabel}>−</Text>
-            </Pressable>
-            <Text style={styles.offsetLabel}>
-              Offset: {offsetSeconds > 0 ? '+' : ''}{offsetSeconds}s
-            </Text>
-            <Pressable style={styles.offsetButton} onPress={handleOffsetPlus}>
-              <Text style={styles.offsetButtonLabel}>+</Text>
-            </Pressable>
-          </View>
         </View>
       ) : isRunning ? (
         <View style={styles.countdownContainer}>
@@ -223,11 +230,6 @@ export default function App() {
             {activeStart ? `Start um ${activeStart.label}` : 'Freier Countdown'}
           </Text>
           <Text style={styles.countdown}>{formatCountdown(remainingSeconds)}</Text>
-          {offsetSeconds !== 0 && (
-            <Text style={styles.offsetLabel}>
-              Offset: {offsetSeconds > 0 ? '+' : ''}{offsetSeconds}s
-            </Text>
-          )}
           <Pressable style={styles.button} onPress={handleReset}>
             <Text style={styles.buttonLabel}>Stoppen</Text>
           </Pressable>
@@ -256,6 +258,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 24,
+  },
+  clockRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   title: {
     fontSize: 32,
@@ -337,26 +344,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#0d2b45',
   },
-  offsetRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-    marginBottom: 20,
-  },
   offsetButton: {
     backgroundColor: '#214d72',
     borderRadius: 10,
-    width: 52,
-    height: 52,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
   offsetButtonLabel: {
     color: '#ffffff',
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
-    lineHeight: 32,
+    lineHeight: 28,
   },
   offsetLabel: {
     fontSize: 18,
