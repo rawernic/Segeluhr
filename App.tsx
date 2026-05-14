@@ -161,7 +161,6 @@ export default function App() {
     setTargetTimestamp(null);
     setActiveStartId(null);
     setRemainingSeconds(0);
-    setOffsetSeconds(0);
     Speech.stop();
   };
 
