@@ -12,11 +12,11 @@ type RegattaStartTime = {
 };
 
 const REGATTA_START_TIMES: RegattaStartTime[] = [
-  { id: 'start-1', label: '30', hour: 18, minute: 40, second: 12 },
-  { id: 'start-2', label: '35', hour: 18, minute: 41, second: 54 },
-  { id: 'start-3', label: '40', hour: 18, minute: 43, second: 36 },
-  { id: 'start-4', label: '45', hour: 18, minute: 45, second: 18 },
-  { id: 'start-5', label: '50', hour: 18, minute: 47, second: 0 },
+  { id: 'start-1', label: '30 - 18:40:12', hour: 18, minute: 40, second: 12 },
+  { id: 'start-2', label: '35 - 18:41:54', hour: 18, minute: 41, second: 54 },
+  { id: 'start-3', label: '40 - 18:43:36', hour: 18, minute: 43, second: 36 },
+  { id: 'start-4', label: '45 - 18:45:18', hour: 18, minute: 45, second: 18 },
+  { id: 'start-5', label: '50 - 18:47:00', hour: 18, minute: 47, second: 0 },
 ];
 
 
@@ -46,11 +46,11 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   }
 
   if (currentSeconds <= 0) {
-    return 'Start';
+    return 'Staaaaart';
   }
 
   if (currentSeconds <= 60) {
-    for (const threshold of [50, 40, 30, 25, 20, 15, 10, 5]) {
+    for (const threshold of [60, 50, 40, 35, 30, 25, 20, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) {
       if (previousSeconds > threshold && currentSeconds <= threshold) {
         return `${threshold}`;
       }
@@ -61,8 +61,8 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   const previousMinutes = Math.ceil(previousSeconds / 60);
   const currentMinutes = Math.ceil(currentSeconds / 60);
 
-  if (previousMinutes > currentMinutes) {
-    return currentMinutes === 1 ? 'Noch 1 Minute' : `Noch ${currentMinutes} Minuten`;
+  if (previousMinutes > currentMinutes && currentMinutes > 1) {
+    return `Noch ${currentMinutes} Minuten`;
   }
 
   return null;
