@@ -12,11 +12,13 @@ type RegattaStartTime = {
 };
 
 const REGATTA_START_TIMES: RegattaStartTime[] = [
-  { id: 'start-1', label: '18:44:30', hour: 18, minute: 44, second: 30 },
-  { id: 'start-2', label: '18:45:00', hour: 18, minute: 45, second: 0 },
-  { id: 'start-3', label: '18:45:40', hour: 18, minute: 45, second: 40 },
-  { id: 'start-4', label: '18:46:20', hour: 18, minute: 46, second: 20 },
+  { id: 'start-1', label: '30', hour: 18, minute: 40, second: 12 },
+  { id: 'start-2', label: '35', hour: 18, minute: 41, second: 54 },
+  { id: 'start-3', label: '40', hour: 18, minute: 43, second: 36 },
+  { id: 'start-4', label: '45', hour: 18, minute: 45, second: 18 },
+  { id: 'start-5', label: '50', hour: 18, minute: 47, second: 00 },
 ];
+
 
 function getTimestampForToday(hour: number, minute: number, second: number): number {
   const d = new Date();
@@ -48,9 +50,9 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
   }
 
   if (currentSeconds <= 60) {
-    for (const threshold of [50, 40, 30, 20, 10]) {
+    for (const threshold of [50, 40, 30, 25, 20, 15, 10, 5]) {
       if (previousSeconds > threshold && currentSeconds <= threshold) {
-        return `Noch ${threshold} Sekunden`;
+        return `${threshold}`;
       }
     }
     return null;
