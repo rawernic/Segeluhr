@@ -20,6 +20,17 @@ const REGATTA_START_TIMES: RegattaStartTime[] = [
 ];
 
 
+function getStoredTimerState(): { targetTimestamp: number | null; remainingSeconds: number } {
+  try {
+    const stored = localStorage.getItem('kaenguruh-target-timestamp');
+    const parsed = stored !== null ? parseInt(stored, 10) : NaN;
+    if (isNaN(parsed) || parsed <= Date.now()) return { targetTimestamp: null, remainingSeconds: 0 };
+    return { targetTimestamp: parsed, remainingSeconds: Math.ceil((parsed - Date.now()) / 1000) };
+  } catch {
+    return { targetTimestamp: null, remainingSeconds: 0 };
+  }
+}
+
 function getTimestampForToday(hour: number, minute: number, second: number): number {
   const d = new Date();
   d.setHours(hour, minute, second, 0);
@@ -79,9 +90,19 @@ function getAnnouncement(previousSeconds: number, currentSeconds: number): strin
 
 export default function App() {
   const [clockTime, setClockTime] = useState<Date>(new Date());
-  const [activeStartId, setActiveStartId] = useState<string | null>(null);
-  const [targetTimestamp, setTargetTimestamp] = useState<number | null>(null);
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
+  const [activeStartId, setActiveStartId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('kaenguruh-active-start-id');
+    } catch {
+      return null;
+    }
+  });
+  const [targetTimestamp, setTargetTimestamp] = useState<number | null>(
+    () => getStoredTimerState().targetTimestamp,
+  );
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(
+    () => getStoredTimerState().remainingSeconds,
+  );
   const [customMinutes, setCustomMinutes] = useState<string>('2');
   const [customSeconds, setCustomSeconds] = useState<string>('0');
   const [offsetSeconds, setOffsetSeconds] = useState<number>(() => {
@@ -142,6 +163,31 @@ export default function App() {
       // storage not available
     }
   }, [offsetSeconds]);
+
+  // Persist active timer across page reloads
+  useEffect(() => {
+    try {
+      if (targetTimestamp !== null) {
+        localStorage.setItem('kaenguruh-target-timestamp', String(targetTimestamp));
+      } else {
+        localStorage.removeItem('kaenguruh-target-timestamp');
+      }
+    } catch {
+      // storage not available
+    }
+  }, [targetTimestamp]);
+
+  useEffect(() => {
+    try {
+      if (activeStartId !== null) {
+        localStorage.setItem('kaenguruh-active-start-id', activeStartId);
+      } else {
+        localStorage.removeItem('kaenguruh-active-start-id');
+      }
+    } catch {
+      // storage not available
+    }
+  }, [activeStartId]);
 
   const handleStart = (start: RegattaStartTime) => {
     const target = getTimestampForToday(start.hour, start.minute, start.second);
