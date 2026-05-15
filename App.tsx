@@ -84,7 +84,15 @@ export default function App() {
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [customMinutes, setCustomMinutes] = useState<string>('2');
   const [customSeconds, setCustomSeconds] = useState<string>('0');
-  const [offsetSeconds, setOffsetSeconds] = useState<number>(0);
+  const [offsetSeconds, setOffsetSeconds] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem('kaenguruh-offset');
+      const parsed = stored !== null ? parseInt(stored, 10) : NaN;
+      return isNaN(parsed) ? 0 : parsed;
+    } catch {
+      return 0;
+    }
+  });
 
   const activeStart = useMemo(
     () => REGATTA_START_TIMES.find((item) => item.id === activeStartId) ?? null,
@@ -125,6 +133,15 @@ export default function App() {
       clearInterval(interval);
     };
   }, [targetTimestamp]);
+
+  // Persist offset across page reloads
+  useEffect(() => {
+    try {
+      localStorage.setItem('kaenguruh-offset', String(offsetSeconds));
+    } catch {
+      // storage not available
+    }
+  }, [offsetSeconds]);
 
   const handleStart = (start: RegattaStartTime) => {
     const target = getTimestampForToday(start.hour, start.minute, start.second);
