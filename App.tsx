@@ -87,7 +87,8 @@ export default function App() {
   const [offsetSeconds, setOffsetSeconds] = useState<number>(() => {
     try {
       const stored = localStorage.getItem('kaenguruh-offset');
-      return stored !== null ? parseInt(stored, 10) : 0;
+      const parsed = stored !== null ? parseInt(stored, 10) : NaN;
+      return isNaN(parsed) ? 0 : parsed;
     } catch {
       return 0;
     }
